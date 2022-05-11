@@ -19,7 +19,8 @@
 function [TCold, THot] = ThermalDesign(Orbit, A, alpha, epsilon, minRequirements, maxRequirements, Q, showplot)
 %% THERMAL ENVIRONMENT
 % Solar radiation
-Js = parameters.P/(4*pi*(parameters.D*1000)^2); % [W/m^2] Solar radiation intensity
+JsHot = parameters.P/(4*pi*(parameters.perihelion*1000)^2); % [W/m^2] Solar radiation intensity
+JsCold = parameters.P/(4*pi*(parameters.aphelion*1000)^2); % [W/m^2] Solar radiation intensity
 
 % Albedo radiation
 d = Orbit.R/parameters.R;
@@ -30,7 +31,8 @@ if abs(Orbit.rho) < pi/2 - asin(1/d)
 else
     F = 1/(pi*d^2)*(cos(Orbit.rho)*acos(y) - c*sin(Orbit.rho*sqrt(1-y^2)) + 1/pi*atan(sin(Orbit.rho)*sqrt(1 - y^2)/x));
 end
-Ja = Js*parameters.albedo*F; % Intensity of albedo radiation
+JaHot = JsHot*parameters.albedo*F; % Intensity of albedo radiation
+JaCold = JsCold*parameters.albedo*F; % Intensity of albedo radiation
 
 % Planetary radiation
 J_M = parameters.eps*parameters.sigma*parameters.Tb; % [W/m^2] Mars thermal radiation
@@ -39,33 +41,23 @@ Rrad = parameters.R; % [m] Radius of Mars effective radiating surface
 Jp = Qir*(Rrad/Orbit.R)^2;
 
 %% THERMAL BALANCE
-Asolar = A(1); % [m^2] Projected area receiving solar radiation
-Aalbedo = A(2); % [m^2] Projected area receiving albedo radiation
-Aplanetary = A(3); % [m^2] Projected area receiving planetary radiation
-Asurf = A(4); % [m^2] Total area
+Asurf = A; % [m^2] Total area
+Asolar = Asurf/4; % [m^2] Projected area receiving solar radiation
+Aalbedo = Asolar; % [m^2] Projected area receiving albedo radiation
+Aplanetary = Asolar; % [m^2] Projected area receiving planetary radiation
 %CAl = 960; % [J/(kg*K)] Aluminium specific heat
 
-TCold = (-2.7^4 + 1/(parameters.sigma*Asurf*epsilon)*(Ja*alpha*Aalbedo + ...
-    Jp*parameters.eps*Aplanetary + Q))^(1/4); % [K] Spacecraft temperature in cold case
-THot = (-2.7^4 + 1/(parameters.sigma*Asurf*epsilon)*(Js*alpha*Asolar + Ja*alpha*Aalbedo + ...
-    Jp*parameters.eps*Aplanetary + Q))^(1/4); % [K] Spacecraft temperature in hot case
-    
-if TCold > max(minRequirements) && THot < min(maxRequirements)
-    fprintf(['<strong> Absorptivity:</strong>                      alpha = ' num2str(alpha) ' [-]\n'])
-    fprintf(['<strong> Emissivity:</strong>                        epsilon = ' num2str(epsilon) ' [-]\n'])
-    fprintf(['<strong> Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
-    fprintf(['<strong> Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
-else 
-    fprintf(['<strong> Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
-    fprintf(['<strong> Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
-end
+THot = (Aplanetary*Jp/(Asurface*parameters.sigma) + Q/(Asurface*parameters.sigma*epsilon) + ...
+    (Asolar*JsHot + Aalbedo*JaHot)/(Asurface*parameters.sigma)*(alpha/epsilon));
+TCold = (Aplanetary*Jp/(Asurface*parameters.sigma) + Q/(Asurface*parameters.sigma*epsilon) + ...
+    (Asolar*JsCold + Aalbedo*JaCold)/(Asurface*parameters.sigma)*(alpha/epsilon));
 
 % Temperature with respect to absorptance and emissivity
 if showplot
     alphas = 0:0.001:1;
     epsilons = 1;
     T_ae = (Aplanetary*Jp/(Asurf*parameters.sigma) + Q./(Asurf*parameters.sigma*epsilons) + ...
-        (Asolar*Js + Aalbedo*Ja)/(Asurf*parameters.sigma)*(alphas./epsilons)).^(1/4); % [K] Spacecraft temperature
+        (Asolar*JsHot + Aalbedo*JaHot)/(Asurf*parameters.sigma)*(alphas./epsilons)).^(1/4); % [K] Spacecraft temperature
 
     figure(1)
     plot(alphas, T_ae, 'LineWidth', 1);

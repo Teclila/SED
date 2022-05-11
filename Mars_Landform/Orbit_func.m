@@ -35,7 +35,7 @@ switch orbittype
     case 'polar'
 OM0=deg2rad(0);         %choosen RAAN [rad]    
 i0=deg2rad(90);         %inclination [rad]
-Orbit.kep_el = [a0 e0 rad2deg(i0) OM0 om0 th0];
+Orbit.kep_el = [a0 e0 i0 OM0 om0 th0];
 FOV = deg2rad(FOV);
 p = a0*(1-e0^2);
 Orbit.DELTA_OM = -3*pi*j2*R_mars^2/p^2*cos(i0);
@@ -207,10 +207,17 @@ xlabel('Longitude [deg]')
 ylabel('Latitude [deg]')
 legend('MRO Orbit','Satellite Orbit','Start','End','Start','End','Location','best')
 title('Ground track confrontation')
-    
+% save('latlonpol_mro.mat', 'lon_mro', 'lat_mro')   
 % colouredplot(lon_per, lat_per, R_mars, h0, FOV, i0)
 
+delta_lon = abs(lon_per - lon_mro);
+visible2_lon = delta_lon > 308.55;
+visible1_lon = delta_lon < 51.45;
+visible_lon = visible1_lon + visible2_lon;
+visibility_lonpol = find(diff([0, visible_lon', 0]));
+save('visibilitypol.mat', 'visibility_lonpol')
 
+save('latlon_pol.mat', 'lon_per', 'lat_per')
 
 
 
@@ -234,7 +241,7 @@ i0=acos(-2*rho/(3*j2*R_mars^2*sqrt(mu))*(a0)^(3.5));         %inclination [rad]
 Orbit.DELTA_OM = -3*pi*j2*R_mars^2/p^2*cos(i0);
 % height max 5.4931e+03
 
-Orbit.kep_el = [a0 e0 rad2deg(i0) OM0 om0 th0];
+Orbit.kep_el = [a0 e0 i0 OM0 om0 th0];
 FOV = deg2rad(FOV);
 
 % 2- GROUND TRACKS
@@ -404,10 +411,17 @@ xlabel('Longitude [deg]')
 ylabel('Latitude [deg]')
 legend('MRO Orbit','Satellite Orbit','Start','End','Start','End','Location','best')
 title('Ground track confrontation')
-    
+% save('latlonsse_mro.mat', 'lon_mro', 'lat_mro')   
 %colouredplot(lon_per, lat_per, R_mars, h0, FOV, i0)
 
 
+delta_lon = abs(lon_per - lon_mro);
+visible2_lon = delta_lon > 308.55;
+visible1_lon = delta_lon < 51.45;
+visible_lon = visible1_lon + visible2_lon;
+visibility_lonsse = find(diff([0, visible_lon', 0]));
+save('visibilitysse.mat', 'visibility_lonsse')
+save('latlon_sse.mat', 'lon_per', 'lat_per')
 
 
 
@@ -434,7 +448,7 @@ i0=acos(-2*rho/(3*j2*R_mars^2*sqrt(mu))*(a0)^(3.5));         %inclination [rad]
 Orbit.DELTA_OM = -3*pi*j2*R_mars^2/p^2*cos(i0);
 % height max 5.4931e+03
 
-Orbit.kep_el = [a0 e0 rad2deg(i0) OM0 om0 th0];
+Orbit.kep_el = [a0 e0 i0 OM0 om0 th0];
 FOV = deg2rad(FOV);
 
 % 2- GROUND TRACKS
@@ -606,15 +620,22 @@ legend('MRO Orbit','Satellite Orbit','Start','End','Start','End','Location','bes
 title('Ground track confrontation')
     
 %colouredplot(lon_per, lat_per, R_mars, h0, FOV, i0)
-
-
-end
+%save('latlonssne_mro.mat', 'lon_mro', 'lat_mro')
 
 delta_lon = abs(lon_per - lon_mro);
 visible2_lon = delta_lon > 308.55;
 visible1_lon = delta_lon < 51.45;
 visible_lon = visible1_lon + visible2_lon;
+visibility_lonssne = find(diff([0, visible_lon', 0]));
+save('visibilityssne.mat', 'visibility_lonssne')
+save('latlon_ssne.mat', 'lon_per', 'lat_per')
+
+
+
+end
+
 Orbit.visibility_lon = find(visible_lon);
+
 
 rho = asin(R_mars/(R_mars+h0));
 eps = acos(sin(FOV)/sin(rho));
@@ -624,6 +645,7 @@ Orbit.lambda = pi/2-FOV-eps;
 Orbit.lon = lon_per;
 Orbit.lat = lat_per;
 
+save('latlon_mro.mat', 'lon_mro', 'lat_mro')
 end
 
 
