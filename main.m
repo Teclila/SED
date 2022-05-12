@@ -16,8 +16,8 @@ Mission.tau_eclipse = 3500;
 Mission.tau_sun = 8800 - 3500;
 Mission.tau = 8800;
 Mission.m = 12;
-% Optical system, Detector, On-board computer, Transmitter-receiver, ADCS devices
-powRequirements = [5.2 0.01 0.06 0.65 3.22; 0 0 0.06 5 3.22; 0 0 0.06 0.5 0.82];  
+% ADCS devices, Optical system, OBDH, Transmitter-receiver
+powRequirements = [3.22 5.2 0.06 0.65; 3.22 0 0.06 5; 0.82 0 0.06 0.5];  
 
 FOV = 9;
 height = 500;               % must change with hugo
@@ -82,7 +82,7 @@ for i = 1:length(data(:,1))
         fprintf(['<strong>Absorptivity:</strong>                      alpha = ' num2str(alpha) ' [-]\n'])
         fprintf(['<strong>Emissivity:</strong>                        epsilon = ' num2str(epsilon) ' [-]\n'])
         fprintf(['<strong>Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
-        fprintf(['<strong>Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
+        fprintf(['<strong>Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n\n'])
     end
 end
 
@@ -91,4 +91,4 @@ fprintf('<strong>- Power budget - </strong>\n')
 fprintf(['<strong>Needed power: </strong>                    ' num2str(Array.P) ' W\n'])
 fprintf(['<strong>Battery stored energy: </strong>           ' num2str(Array.E_B) ' W-hrs\n'])
 fprintf(['<strong>Total energy required from array: </strong>' num2str(Array.epsilon) ' W-hrs\n'])
-fprintf(['<strong>Array surface area: </strong>              ' num2str(Array.A*1e4) ' cm²\n'])
+fprintf(['<strong>Array surface area: </strong>              ' num2str(Array.A) ' m²\n'])

@@ -19,16 +19,16 @@ DOD = 0.8; % Depth of discharge (see Eurostar 3000, Li-ion)
 D = 0.05; % Degradation factor
 
 % Pointing error
-deltaTheta = 1; % [°] Array pointing error with respect to the sun
+deltaTheta = 1.34; % [°] Array pointing error with respect to the sun
 
 % Radiation
 S = parameters.P/(4*pi*(parameters.D*1000)^2); % [W/m^2] Solar radiation intensity
 eta = etaBCR*etaBDR*etaAR;
 
 % Power and energy
-PCharge = 1/eta*sum(Requirements(:,1))*(1/0.8 - 1);
-Array.P = sum(Requirements(:,2)) + PCharge;
-Array.E_B = sum(Requirements(:,1))*(28*24)*(1 - 0.8)/(etaCharge*DOD);
+PCharge = 1/eta*max([sum(Requirements(1,:)) sum(Requirements(2,:)) sum(Requirements(3,:))])*(1/0.8 - 1);
+Array.P = max([sum(Requirements(1,:)) sum(Requirements(2,:)) sum(Requirements(3,:))]) + PCharge;
+Array.E_B = max([sum(Requirements(1,:)) sum(Requirements(2,:)) sum(Requirements(3,:))])*(28*24)*(1 - 0.8)/(etaCharge*DOD);
 Array.epsilon = Array.P*(28*24);
 
 % Dimension of the arrays
