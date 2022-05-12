@@ -7,16 +7,19 @@
 %                         component
 % Outputs: * Array: structure containing array parameters
 
-function Array = PowerBudget(Requirements)
+function Array = PowerBudget(Mission, Requirements)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% To be updated %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+etaAR = 0.9; % [-] Efficiency of array regulator
+etaCharge = 0.9; % [-] Charge efficiency
+DOD = 0.1; % Depth of discharge
+D = 0.1; % Degradation factor (see 10.3.1)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Efficiencies
 etaBCR = 0.91; % [-] Efficiency of the battery charge regulator
 etaBDR = 0.89; % [-] Efficiency of the battery discharge regulator
 etaCell = 0.9; % [-] Solar cell efficiency
 etaPacking = 0.9; % [-] Cell packing efficiency
-etaAR = 0.9; % [-] Efficiency of array regulator, assumed
-etaCharge = 0.9; % [-] Charge efficiency, assumed
-DOD = 0.8; % Depth of discharge (see Eurostar 3000, Li-ion)
-D = 0.05; % Degradation factor
 
 % Pointing error
 deltaTheta = 1; % [°] Array pointing error with respect to the sun
@@ -28,8 +31,8 @@ eta = etaBCR*etaBDR*etaAR;
 % Power and energy
 PCharge = 1/eta*sum(Requirements(:,1))*(1/0.8 - 1);
 Array.P = sum(Requirements(:,2)) + PCharge;
-Array.E_B = sum(Requirements(:,1))*(28*24)*(1 - 0.8)/(etaCharge*DOD);
-Array.epsilon = Array.P*(28*24);
+Array.E_B = sum(Requirements(:,1))*(Mission.tau - Mission.tau_sun)/(etaCharge*DOD);
+Array.epsilon = Array.P*Mission.tau;
 
 % Dimension of the arrays
 Array.A = Array.P/(S*cosd(deltaTheta)*etaCell*etaPacking*(1-D));

@@ -9,14 +9,15 @@ Orbit.rho = 0;
 Orbit.R = 35000e3; % [km]
 A6U = 2*0.3*0.2 + 2*0.1*0.2 + 2*0.3*0.1;
 A3U = 2*0.3*0.1 + 2*0.3*0.1 + 2*0.3*0.1;
-minRequirements = [0 -40 -30 0 -30] + 273.15; 
+minRequirements = [0 -40 -30 0 -30] + 273.15; % Batteries, Solar panels, Detector, Optics, ADCS
 maxRequirements = [30 80 65 30 65] + 273.15;
 Q = 0;
 Mission.tau_eclipse = 3500;
 Mission.tau_sun = 8800 - 3500;
 Mission.tau = 8800;
 Mission.m = 12;
-powRequirements = [3.5 0.01 0.06 0.65 3.22; 0 0 0.06 6.5 3.22]; 
+% Optical system, Detector, On-board computer, Transmitter-receiver, ADCS devices
+powRequirements = [5.2 0.01 0.06 0.65 3.22; 0 0 0.06 5 3.22; 0 0 0.06 0.5 0.82];  
 
 FOV = 9;
 height = 500;               % must change with hugo
@@ -36,7 +37,7 @@ visibility_deg = FOV/(Orbit_parameters_sunsyncecl.kep_el(1)-astroConstants(24))*
 % run ('Link/telecommunication_strategy')
 %only run if you have the antenna toolbox, can't commit to github :/
 
-% Thermal and power budget
+%% Thermal and power budget
 Orbit.rho = 0;
 Orbit.R = parameters.Rpolar + 500; % [km]
 Names = {'Polished beryllium'; 'Goldized kapton (gold outside)'; ...
@@ -76,36 +77,18 @@ for i = 1:length(data(:,1))
     if TCold > max(minRequirements) && THot < min(maxRequirements)
         [TCold, THot] = ThermalDesign(Orbit, A6U, alpha, epsilon, Q, 1);
         title(Names{i}, 'Interpreter', 'Latex')
-        fprintf('<strong> - - - </strong>\n')
-        fprintf('<strong> 6U </strong>\n')
-        fprintf(['<strong> Coating: </strong>                          ' Names{i} '\n'])
-        fprintf(['<strong> Absorptivity:</strong>                      alpha = ' num2str(alpha) ' [-]\n'])
-        fprintf(['<strong> Emissivity:</strong>                        epsilon = ' num2str(epsilon) ' [-]\n'])
-        fprintf(['<strong> Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
-        fprintf(['<strong> Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
+        fprintf('<strong>- Thermal design - </strong>\n')
+        fprintf(['<strong>Coating: </strong>                          ' Names{i} '\n'])
+        fprintf(['<strong>Absorptivity:</strong>                      alpha = ' num2str(alpha) ' [-]\n'])
+        fprintf(['<strong>Emissivity:</strong>                        epsilon = ' num2str(epsilon) ' [-]\n'])
+        fprintf(['<strong>Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
+        fprintf(['<strong>Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
     end
 end
 
-% for alpha = 0.001:0.001:1
-%     for epsilon = 0.001:0.001:1
-%         [TCold, THot] = ThermalDesign(Orbit, A6U, alpha, epsilon, Q, 0);
-%         if TCold > TRange(1) && THot < TRange(2)
-%             fprintf('<strong> - - - </strong>')
-%             fprintf('<strong> - 6U </strong>')
-%             fprintf(['<strong> Absorptivity:</strong>                      alpha = ' num2str(alpha) ' [-]\n'])
-%             fprintf(['<strong> Emissivity:</strong>                        epsilon = ' num2str(epsilon) ' [-]\n'])
-%             fprintf(['<strong> Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
-%             fprintf(['<strong> Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
-%         end
-% 
-%         [TCold, THot] = ThermalDesign(Orbit, A3U, alpha, epsilon, Q, 0);
-%         if TCold > TRange(1) && THot < TRange(2)
-%             fprintf('<strong> - - - </strong>')
-%             fprintf('<strong> - 3U </strong>')
-%             fprintf(['<strong> Absorptivity:</strong>                      alpha = ' num2str(alpha) ' [-]\n'])
-%             fprintf(['<strong> Emissivity:</strong>                        epsilon = ' num2str(epsilon) ' [-]\n'])
-%             fprintf(['<strong> Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
-%             fprintf(['<strong> Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
-%         end
-%     end
-% end
+Array = PowerBudget(powRequirements);
+fprintf('<strong>- Power budget - </strong>\n')
+fprintf(['<strong>Needed power: </strong>                    ' num2str(Array.P) ' W\n'])
+fprintf(['<strong>Battery stored energy: </strong>           ' num2str(Array.E_B) ' W-hrs\n'])
+fprintf(['<strong>Total energy required from array: </strong>' num2str(Array.epsilon) ' W-hrs\n'])
+fprintf(['<strong>Array surface area: </strong>              ' num2str(Array.A*1e4) ' cm²\n'])
