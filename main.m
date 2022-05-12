@@ -9,7 +9,7 @@ Orbit.rho = 0;
 Orbit.R = 35000e3; % [km]
 A6U = 2*0.3*0.2 + 2*0.1*0.2 + 2*0.3*0.1;
 A3U = 2*0.3*0.1 + 2*0.3*0.1 + 2*0.3*0.1;
-minRequirements = [10 -40 -30 10 -30] + 273.15; % Optic, Batt, 
+minRequirements = [0 -40 -30 0 -30] + 273.15; 
 maxRequirements = [30 80 65 30 65] + 273.15;
 Q = 0;
 Mission.tau_eclipse = 3500;
@@ -26,23 +26,26 @@ n_days = 20;
 
 addpath(genpath('Mars_Landform'))
 n_days = 20;
-Orbit_parameters_polar = Orbit_func (FOV, height, 'polar', n_days)
-Orbit_parameters_sunsyncnoecl = Orbit_func (FOV, height, 'sun-sync-noecl', n_days)
-Orbit_parameters_sunsyncecl = Orbit_func (FOV, height, 'sun-sync-ecl', n_days)
+Orbit_parameters_polar = Orbit_func (FOV, height, 'polar', n_days);
+Orbit_parameters_sunsyncnoecl = Orbit_func (FOV, height, 'sun-sync-noecl', n_days);
+Orbit_parameters_sunsyncecl = Orbit_func (FOV, height, 'sun-sync-ecl', n_days);
 
 
 visibility_deg = FOV/(Orbit_parameters_sunsyncecl.kep_el(1)-astroConstants(24))*astroConstants(24);
 
 % run ('Link/telecommunication_strategy')
 %only run if you have the antenna toolbox, can't commit to github :/
-%% Thermal and power budget
-Names = ["Polished beryllium"; "Goldized kapton (gold outside)"; ...
-    "Gold"; "Aluminium tape"; "Polished aluminium"; "Aluminized kapton (aluminium outside)"; ...
-    "Polished titanium"; "Black paint (epoxy)"; "Black paint (polyurethane)"; ...
-    "Silver paint (electrically conducting)"; "White paint (silicone)"; ...
-    "White paint (silicate)"; "Solar cells, GaAs (typical values)"; ...
-    "Solar cells, silicon (typical values)"; "Aluminized kapton (kapton outside)"; ...
-    "Aluminized FEP"; "Silver coated FEP (SSM)"; "OSR"];
+
+% Thermal and power budget
+Orbit.rho = 0;
+Orbit.R = parameters.Rpolar + 500; % [km]
+Names = {'Polished beryllium'; 'Goldized kapton (gold outside)'; ...
+    'Gold'; 'Aluminium tape'; 'Polished aluminium'; 'Aluminized kapton (aluminium outside)'; ...
+    'Polished titanium'; 'Black paint (epoxy)'; 'Black paint (polyurethane)'; ...
+    'Silver paint (electrically conducting)'; 'White paint (silicone)'; ...
+    'White paint (silicate)'; 'Solar cells, GaAs (typical values)'; ...
+    'Solar cells, silicon (typical values)'; 'Aluminized kapton (kapton outside)'; ...
+    'Aluminized FEP'; 'Silver coated FEP (SSM)'; 'OSR'};
 data = [0.44 0.01 44.00; ...
         0.25 0.02 12.5; ...
         0.25 0.04 6.25; ...
@@ -61,19 +64,48 @@ data = [0.44 0.01 44.00; ...
         0.16 0.47 0.34; ...
         0.08 0.78 0.10; ...
         0.07 0.74 0.09];
-Orbit.rho = 0;
-Orbit.R = 0;
-
+T = zeros(length(data(:,1)), 2);
+TRange = [max(minRequirements) min(maxRequirements)];
 for i = 1:length(data(:,1))
     alpha = data(i, 1);
     epsilon = data(i, 2);
     
-    [TCold, THot, alphaEpsilon] = ThermalDesign(Orbit, A, alpha, epsilon, minRequirements, maxRequirements, Q, showplot);
-    
+    [TCold, THot] = ThermalDesign(Orbit, A6U, alpha, epsilon, Q, 0);
+    T(i, 2) = THot;
+    T(i, 1) = TCold;
     if TCold > max(minRequirements) && THot < min(maxRequirements)
+        [TCold, THot] = ThermalDesign(Orbit, A6U, alpha, epsilon, Q, 1);
+        title(Names{i}, 'Interpreter', 'Latex')
+        fprintf('<strong> - - - </strong>\n')
+        fprintf('<strong> 6U </strong>\n')
+        fprintf(['<strong> Coating: </strong>                          ' Names{i} '\n'])
         fprintf(['<strong> Absorptivity:</strong>                      alpha = ' num2str(alpha) ' [-]\n'])
         fprintf(['<strong> Emissivity:</strong>                        epsilon = ' num2str(epsilon) ' [-]\n'])
         fprintf(['<strong> Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
         fprintf(['<strong> Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
     end
 end
+
+% for alpha = 0.001:0.001:1
+%     for epsilon = 0.001:0.001:1
+%         [TCold, THot] = ThermalDesign(Orbit, A6U, alpha, epsilon, Q, 0);
+%         if TCold > TRange(1) && THot < TRange(2)
+%             fprintf('<strong> - - - </strong>')
+%             fprintf('<strong> - 6U </strong>')
+%             fprintf(['<strong> Absorptivity:</strong>                      alpha = ' num2str(alpha) ' [-]\n'])
+%             fprintf(['<strong> Emissivity:</strong>                        epsilon = ' num2str(epsilon) ' [-]\n'])
+%             fprintf(['<strong> Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
+%             fprintf(['<strong> Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
+%         end
+% 
+%         [TCold, THot] = ThermalDesign(Orbit, A3U, alpha, epsilon, Q, 0);
+%         if TCold > TRange(1) && THot < TRange(2)
+%             fprintf('<strong> - - - </strong>')
+%             fprintf('<strong> - 3U </strong>')
+%             fprintf(['<strong> Absorptivity:</strong>                      alpha = ' num2str(alpha) ' [-]\n'])
+%             fprintf(['<strong> Emissivity:</strong>                        epsilon = ' num2str(epsilon) ' [-]\n'])
+%             fprintf(['<strong> Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
+%             fprintf(['<strong> Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n'])
+%         end
+%     end
+% end
