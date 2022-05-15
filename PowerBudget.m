@@ -11,7 +11,7 @@ function Array = PowerBudget(Requirements)
 % Efficiencies
 etaBCR = 0.91; % [-] Efficiency of the battery charge regulator
 etaBDR = 0.89; % [-] Efficiency of the battery discharge regulator
-etaCell = 0.9; % [-] Solar cell efficiency
+etaCell = 0.3; % [-] Solar cell efficiency
 etaPacking = 0.9; % [-] Cell packing efficiency
 etaAR = 0.9; % [-] Efficiency of array regulator, assumed
 etaCharge = 0.9; % [-] Charge efficiency, assumed
