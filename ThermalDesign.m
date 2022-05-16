@@ -59,6 +59,8 @@ if showplot
     TCold_plot = (Aplanetary*Jp/(Asurface*parameters.sigma) + Q./(Asurface*parameters.sigma) + ...
         (Asolar*JsHot + Aalbedo*JaHot)/(Asurface*parameters.sigma)*(alphaEpsilon)*0.8).^(1/4); % [K] Spacecraft temperature
     
+    disp(Asolar);
+    
     set(0,'defaultTextInterpreter','latex')
 
     color1 = '#FF6600';
@@ -72,13 +74,17 @@ if showplot
     figure
     hold on;
     p1 = plot(alphaEpsilon, THot_plot, 'LineWidth', 1, 'Color', color1);
-    plot(alpha/epsilon, THot, 'd', 'LineWidth', 1, 'Color', color1);
+    p3 = plot(0.95/0.85, 18.4604+273.15, 'd', 'LineWidth', 1, 'Color', color3);
+    p4 = plot(0.95/0.9, 14.7568+273.15, 'd', 'LineWidth', 1, 'Color', color4);
+    p5 = plot(0.88/0.8, 17.4221+273.15, 'd', 'LineWidth', 1, 'Color', color5);
     p2 = plot(alphaEpsilon, TCold_plot, 'LineWidth', 1, 'Color', color2);
-    plot(alpha/epsilon, TCold, 'd', 'LineWidth', 1, 'Color', color2);
+    plot(0.95/0.85, 4.3938+273.15, 'd', 'LineWidth', 1, 'Color', color3);
+    plot(0.95/0.9, 0.9589+273.15, 'd', 'LineWidth', 1, 'Color', color4);
+    plot(0.88/0.8, 4.4305+273.15, 'd', 'LineWidth', 1, 'Color', color5);
     hold off
     xlabel('$\alpha/\epsilon$ [-]', 'Interpreter', 'Latex')
     ylabel('$T$ [K]', 'Interpreter', 'Latex')
-    legend([p1 p2], {'Hot case', 'Hot case'}, 'Location', 'SouthEast', 'Interpreter', 'Latex')
+    legend([p1 p2 p3 p4 p5], {'Hot case', 'Hot case', 'Epoxy', 'Polyurethane', 'GaAs'}, 'Location', 'SouthEast', 'Interpreter', 'Latex')
     set(gca, 'FontSize', pt, 'FontName', 'Times', 'LineWidth', 0.5)
 end
 end

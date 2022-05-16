@@ -9,15 +9,16 @@ Orbit.rho = 0;
 Orbit.R = 35000e3; % [km]
 A6U = 2*0.3*0.2 + 2*0.1*0.2 + 2*0.3*0.1;
 A3U = 2*0.3*0.1 + 2*0.3*0.1 + 2*0.3*0.1;
-minRequirements = [0 -40 -30 0 -30] + 273.15; % Batteries, Solar panels, Detector, Optics, ADCS
-maxRequirements = [30 80 65 30 65] + 273.15;
+% Batteries, Solar panels, Optics, ADCS, Antenna
+minRequirements = [-20 -40 0 -20 -40] + 273.15;
+maxRequirements = [45 80 30 70 85] + 273.15;
 Q = 0;
 Mission.tau_eclipse = 3500;
 Mission.tau_sun = 8800 - 3500;
 Mission.tau = 8800;
 Mission.m = 12;
 % ADCS devices, Optical system, OBDH, Transmitter-receiver
-powRequirements = [3.22 5.2 0.06 0.65; 3.22 0 0.06 5; 0.82 0 0.06 0.5];  
+powRequirements = [10.85 9 0.06 0.65; 10.85 0 0.06 5; 0 0 0.06 0.5];  
 
 FOV = 9;
 height = 500;               % must change with hugo
@@ -84,6 +85,10 @@ for i = 1:length(data(:,1))
         fprintf(['<strong>Cold case temperature:</strong>             TCold = ' num2str(TCold) ' K\n'])
         fprintf(['<strong>Hot case temperature:</strong>              THot = ' num2str(THot) ' K\n\n'])
     end
+end
+
+for i = 1:length(data(:,1))
+    fprintf([Names{i} '  ' num2str(data(i,1)) '  ' num2str(data(i,2)) '  ' num2str(T(i,1)-273.15) '  ' num2str(T(i,2)-273.15) '\n'])
 end
 
 Array = PowerBudget(powRequirements);

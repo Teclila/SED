@@ -28,8 +28,8 @@ eta = etaBCR*etaBDR*etaAR;
 % Power and energy
 PCharge = 1/eta*max([sum(Requirements(1,:)) sum(Requirements(2,:)) sum(Requirements(3,:))])*(1/0.8 - 1);
 Array.P = max([sum(Requirements(1,:)) sum(Requirements(2,:)) sum(Requirements(3,:))]) + PCharge;
-Array.E_B = max([sum(Requirements(1,:)) sum(Requirements(2,:)) sum(Requirements(3,:))])*(28*24)*(1 - 0.8)/(etaCharge*DOD);
-Array.epsilon = Array.P*(28*24);
+Array.E_B = max([sum(Requirements(1,:)) sum(Requirements(2,:)) sum(Requirements(3,:))])*8800/60/60*(1 - 0.8)/(etaCharge*DOD);
+Array.epsilon = Array.P*8800/60/60;
 
 % Dimension of the arrays
 Array.A = Array.P/(S*cosd(deltaTheta)*etaCell*etaPacking*(1-D));
