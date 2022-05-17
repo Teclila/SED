@@ -18,7 +18,7 @@ Mission.tau_sun = 8800 - 3500;
 Mission.tau = 8800;
 Mission.m = 12;
 % ADCS devices, Optical system, OBDH, Transmitter-receiver
-powRequirements = [10.85 9 0.06 0.65; 10.85 0 0.06 5; 0 0 0.06 0.5];  
+powRequirements = [10.85 9 0.88 0.65; 10.85 0 0.88 5; 0 0 0.88 0.5];  
 
 FOV = 9;
 height = 500;               % must change with hugo
