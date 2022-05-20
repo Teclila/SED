@@ -7,6 +7,8 @@
 %% Initialization
 Orbit.rho = 0;
 Orbit.R = 35000e3; % [km]
+A8U = 2*0.1*0.125 + 2*0.1*0.64 + 2*0.125*0.64;
+A8Ubis = 2*0.43*0.1 + 2*0.43*0.186 + 2*0.1*0.186; 
 A6U = 2*0.3*0.2 + 2*0.1*0.2 + 2*0.3*0.1;
 A3U = 2*0.3*0.1 + 2*0.3*0.1 + 2*0.3*0.1;
 % Batteries, Solar panels, Optics, ADCS, Antenna
@@ -18,7 +20,7 @@ Mission.tau_sun = 8800 - 3500;
 Mission.tau = 8800;
 Mission.m = 12;
 % ADCS devices, Optical system, OBDH, Transmitter-receiver
-powRequirements = [10.85 9 0.88 0.65; 10.85 0 0.88 5; 0 0 0.88 0.5];  
+powRequirements = [10.85 9 0.88 0.65; 10.85 0 0.88 5; 0 0 0.88 0.65];  
 
 FOV = 9;
 height = 500;               % must change with hugo
@@ -72,11 +74,11 @@ for i = 1:length(data(:,1))
     alpha = data(i, 1);
     epsilon = data(i, 2);
     
-    [TCold, THot] = ThermalDesign(Orbit, A6U, alpha, epsilon, Q, 0);
+    [TCold, THot] = ThermalDesign(Orbit, A8Ubis, alpha, epsilon, Q, 0);
     T(i, 2) = THot;
     T(i, 1) = TCold;
     if TCold > max(minRequirements) && THot < min(maxRequirements)
-        [TCold, THot] = ThermalDesign(Orbit, A6U, alpha, epsilon, Q, 1);
+        [TCold, THot] = ThermalDesign(Orbit, A8Ubis, alpha, epsilon, Q, 1);
         title(Names{i}, 'Interpreter', 'Latex')
         fprintf('<strong>- Thermal design - </strong>\n')
         fprintf(['<strong>Coating: </strong>                          ' Names{i} '\n'])

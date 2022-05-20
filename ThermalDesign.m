@@ -59,8 +59,6 @@ if showplot
     TCold_plot = (Aplanetary*Jp/(Asurface*parameters.sigma) + Q./(Asurface*parameters.sigma) + ...
         (Asolar*JsHot + Aalbedo*JaHot)/(Asurface*parameters.sigma)*(alphaEpsilon)*0.8).^(1/4); % [K] Spacecraft temperature
     
-    disp(Asolar);
-    
     set(0,'defaultTextInterpreter','latex')
 
     color1 = '#FF6600';
@@ -84,7 +82,7 @@ if showplot
     hold off
     xlabel('$\alpha/\epsilon$ [-]', 'Interpreter', 'Latex')
     ylabel('$T$ [K]', 'Interpreter', 'Latex')
-    legend([p1 p2 p3 p4 p5], {'Hot case', 'Hot case', 'Epoxy', 'Polyurethane', 'GaAs'}, 'Location', 'SouthEast', 'Interpreter', 'Latex')
+    legend([p1 p2 p3 p4 p5], {'Hot case', 'Cold case', 'Epoxy', 'Polyurethane', 'GaAs'}, 'Location', 'SouthEast', 'Interpreter', 'Latex')
     set(gca, 'FontSize', pt, 'FontName', 'Times', 'LineWidth', 0.5)
 end
 end
